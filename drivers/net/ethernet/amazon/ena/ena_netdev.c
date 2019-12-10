@@ -78,7 +78,37 @@ static void check_for_admin_com_state(struct ena_adapter *adapter);
 static void ena_destroy_device(struct ena_adapter *adapter, bool graceful);
 static int ena_restore_device(struct ena_adapter *adapter);
 
-static void ena_tx_timeout(struct net_device *dev)
+static void ena_init_io_rings(struct ena_adapter *adapter,
+			      int first_index, int count);
+static void ena_init_napi_in_range(struct ena_adapter *adapter, int first_index,
+				   int count);
+static void ena_del_napi_in_range(struct ena_adapter *adapter, int first_index,
+				  int count);
+static int ena_setup_tx_resources(struct ena_adapter *adapter, int qid);
+static int ena_setup_tx_resources_in_range(struct ena_adapter *adapter,
+					   int first_index,
+					   int count);
+static int ena_create_io_tx_queue(struct ena_adapter *adapter, int qid);
+static void ena_free_tx_resources(struct ena_adapter *adapter, int qid);
+static int ena_clean_xdp_irq(struct ena_ring *xdp_ring, u32 budget);
+static void ena_destroy_all_tx_queues(struct ena_adapter *adapter);
+static void ena_free_all_io_tx_resources(struct ena_adapter *adapter);
+static void ena_napi_disable_in_range(struct ena_adapter *adapter,
+				      int first_index, int count);
+static void ena_napi_enable_in_range(struct ena_adapter *adapter,
+				     int first_index, int count);
+static int ena_up(struct ena_adapter *adapter);
+static void ena_down(struct ena_adapter *adapter);
+static void ena_unmask_interrupt(struct ena_ring *tx_ring,
+				 struct ena_ring *rx_ring);
+static void ena_update_ring_numa_node(struct ena_ring *tx_ring,
+				      struct ena_ring *rx_ring);
+static void ena_unmap_tx_buff(struct ena_ring *tx_ring,
+			      struct ena_tx_buffer *tx_info);
+static int ena_create_io_tx_queues_in_range(struct ena_adapter *adapter,
+					    int first_index, int count);
+
+static void ena_tx_timeout(struct net_device *dev, unsigned int txqueue)
 {
 	struct ena_adapter *adapter = netdev_priv(dev);
 
